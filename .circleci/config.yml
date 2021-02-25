@@ -1,32 +1,13 @@
-version: 2
-jobs:
-  build:
-    machine: true
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - run:
-          name: Setup
-          command: |            
-            sudo pip install --ignore-installed setuptools
-            sudo pip install urllib3 pyOpenSSL ndg-httpsclient pyasn1
-            sudo cp -r ~/.ssh/* /root/.ssh
-            mkdir -p ~/.bench
-            mkdir -p /tmp/.bench
-            cp -r ~/repo/* ~/.bench
-            cp -r ~/repo/* /tmp/.bench
-
-      - run:
-          name: Install Bench (Production)
-          command: sudo python ~/repo/playbooks/install.py --user travis --run-travis --production
-
-      - run:
-          name: Setup Tests
-          command: |
-            cd ~
-            sudo pip install --upgrade pip
-            sudo pip install -e ~/.bench
-
-      - run:
-          name: Run Tests
-          command: sudo -E python -m unittest -v bench.tests.test_setup_production
+# Use the latest 2.1 version of CircleCI pipeline process engine. See: https://circleci.com/docs/2.0/configuration-reference
+version: 2.1
+# Use a package of configuration called an orb.
+orbs:
+  # Declare a dependency on the welcome-orb
+  welcome: circleci/welcome-orb@0.4.1
+# Orchestrate or schedule a set of jobs
+workflows:
+  # Name the workflow "welcome"
+  welcome:
+    # Run the welcome/run job in its own container
+    jobs:
+      - welcome/run
